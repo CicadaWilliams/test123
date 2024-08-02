@@ -1,0 +1,30 @@
+name: Manual PR
+
+on:
+  workflow_dispatch:
+
+jobs:
+  createPR:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Generate GitHub App installation token
+        id: generate_token
+        uses: tibdex/github-app-token@v1
+        with:
+          app_id: ${{ secrets.APP_ID }}
+          private_key: ${{ secrets.PRIVATE_KEY }}
+
+      - name: Update README
+        run: echo "Additional Text" >> README.md
+
+      - name: Create PR
+        uses: peter-evans/create-pull-request@v3
+        with:
+          token: ${{ steps.generate_token.outputs.token }}
+          commit-message: Update README.md
+          title: Update README.md
+          body: Update README.md with additional text
+          branch: update-readme
